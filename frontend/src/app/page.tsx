@@ -1,67 +1,7 @@
 import { Suspense } from "react";
 import AppShell from "@/components/app-shell";
+import { dashboardApiBaseUrl, loadDashboard, type DashboardData, type PayBand } from "@/lib/dashboard-data";
 import { countryName, formatMoney, formatNumber } from "@/lib/format";
-
-type Overview = {
-  headcount: number;
-  annual_payroll_usd_cents: number;
-  average_annual_salary_usd_cents: number | null;
-  median_annual_salary_usd_cents: number | null;
-};
-
-type GroupSummary = {
-  department?: string;
-  country_code?: string;
-  headcount: number;
-  annual_payroll_usd_cents: number;
-  average_annual_salary_usd_cents: number | null;
-  median_annual_salary_usd_cents: number | null;
-};
-
-type PayBand = {
-  department: string;
-  job_level: string;
-  headcount: number;
-  p25_annual_salary_usd_cents: number;
-  median_annual_salary_usd_cents: number;
-  p75_annual_salary_usd_cents: number;
-};
-
-type DashboardData = {
-  overview: Overview;
-  departments: GroupSummary[];
-  countries: GroupSummary[];
-  payBands: PayBand[];
-};
-
-const apiBaseUrl = (process.env.RAILS_API_URL ?? "http://127.0.0.1:3000").replace(/\/$/, "");
-
-async function fetchJson<T>(path: string): Promise<T> {
-  const response = await fetch(`${apiBaseUrl}${path}`, { cache: "no-store" });
-
-  if (!response.ok) {
-    throw new Error(`The payroll API returned ${response.status}.`);
-  }
-
-  return response.json() as Promise<T>;
-}
-
-async function loadDashboard(): Promise<DashboardData> {
-  const [overview, breakdown, payBandResponse] = await Promise.all([
-    fetchJson<Overview>("/api/v1/dashboard/overview"),
-    fetchJson<{ departments: GroupSummary[]; countries: GroupSummary[] }>(
-      "/api/v1/dashboard/breakdown",
-    ),
-    fetchJson<{ groups: PayBand[] }>("/api/v1/dashboard/pay_bands"),
-  ]);
-
-  return {
-    overview,
-    departments: breakdown.departments,
-    countries: breakdown.countries,
-    payBands: payBandResponse.groups,
-  };
-}
 
 function DashboardLoading() {
   return (
@@ -103,7 +43,7 @@ function MetricCard({
   );
 }
 
-function PayBandAnalysis({ bands }: { bands: PayBand[] }) {
+export function PayBandAnalysis({ bands }: { bands: PayBand[] }) {
   const departments = [...new Set(bands.map((band) => band.department))];
   const levelOrder = ["Junior", "Mid", "Senior", "Lead", "Manager", "Director"];
 
@@ -145,31 +85,39 @@ function PayBandAnalysis({ bands }: { bands: PayBand[] }) {
   );
 }
 
+export function DashboardUnavailable() {
+  return (
+    <AppShell activePage="overview">
+      <section className="content-wrap">
+        <div className="page-heading">
+          <div><p className="eyebrow">GLOBAL WORKFORCE</p><h1>Overview</h1></div>
+        </div>
+        <div className="api-error" role="status">
+          <span className="error-symbol">!</span>
+          <div>
+            <strong>Payroll data is unavailable</strong>
+            <p>Try again shortly or verify that the payroll API is available.</p>
+            <code>{dashboardApiBaseUrl}</code>
+          </div>
+        </div>
+      </section>
+    </AppShell>
+  );
+}
+
 async function DashboardContent() {
   let data: DashboardData;
 
   try {
     data = await loadDashboard();
   } catch {
-    return (
-      <AppShell activePage="overview">
-        <section className="content-wrap">
-          <div className="page-heading">
-            <div><p className="eyebrow">GLOBAL WORKFORCE</p><h1>Overview</h1></div>
-          </div>
-          <div className="api-error" role="status">
-            <span className="error-symbol">!</span>
-            <div>
-              <strong>Payroll data is unavailable</strong>
-              <p>Try again shortly or verify that the payroll API is available.</p>
-              <code>{apiBaseUrl}</code>
-            </div>
-          </div>
-        </section>
-      </AppShell>
-    );
+    return <DashboardUnavailable />;
   }
 
+  return <DashboardView data={data} />;
+}
+
+export function DashboardView({ data }: { data: DashboardData }) {
   const departmentsByPayroll = [...data.departments]
     .sort((first, second) => second.annual_payroll_usd_cents - first.annual_payroll_usd_cents);
   const highestDepartmentPayroll = Math.max(...departmentsByPayroll.map((department) => department.annual_payroll_usd_cents), 1);
