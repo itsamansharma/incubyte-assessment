@@ -15,13 +15,12 @@ module Api
       private
 
       def active_compensation_summary
-        Compensation.active
-          .joins(:employee)
+        Employee.left_joins(:active_compensation)
           .pick(
-            Arel.sql("COUNT(DISTINCT employees.id)"),
+            Arel.sql("COUNT(employees.id)"),
             Arel.sql("COALESCE(SUM(compensations.amount_usd_cents), 0)"),
             Arel.sql("AVG(compensations.amount_usd_cents)"),
-            Arel.sql("PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY compensations.amount_usd_cents)")
+            Arel.sql("PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY compensations.amount_usd_cents) FILTER (WHERE compensations.id IS NOT NULL)")
           )
       end
     end

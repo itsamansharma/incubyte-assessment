@@ -1,20 +1,19 @@
 # Stable reference data and a repeatable 10,000-person sample workforce.
 # Run with `bin/rails db:seed`; existing employees and their salary histories are kept.
 
-SEED_DATE = Date.new(2026, 10, 30)
 SEED_SIZE = 10_000
 SEED_BATCH_SIZE = 1_000
 SEED_RANDOM = Random.new(20_261_030)
 
 DEPARTMENTS = [
-  ["Engineering", "ENG"],
-  ["Product", "PRD"],
-  ["Sales", "SAL"],
-  ["Finance", "FIN"],
-  ["Human Resources", "HR"],
-  ["Operations", "OPS"],
-  ["Marketing", "MKT"],
-  ["Customer Support", "CS"]
+  [ "Engineering", "ENG" ],
+  [ "Product", "PRD" ],
+  [ "Sales", "SAL" ],
+  [ "Finance", "FIN" ],
+  [ "Human Resources", "HR" ],
+  [ "Operations", "OPS" ],
+  [ "Marketing", "MKT" ],
+  [ "Customer Support", "CS" ]
 ].freeze
 
 # Rates are the USD value of one unit of the currency, represented in millionths
@@ -50,18 +49,18 @@ SEED_COUNTRIES = [
   },
   {
     code: "SG", currency: "SGD", pay_factor: 9_500, weight: 8,
-    first_names: %w[Amelia Chloe Ethan Ethan Hannah Isaac Jia Wei Kai Li Mei],
+    first_names: %w[Amelia Chloe Ethan Hannah Isaac Jia Wei Kai Li Mei],
     last_names: %w[Lim Tan Lee Ng Wong Goh Chua Koh Teo Yeo]
   }
 ].freeze
 
 SEED_LEVELS = [
-  ["Junior", 4_500_000, 6_500_000, 25],
-  ["Mid", 6_500_000, 9_500_000, 35],
-  ["Senior", 9_500_000, 14_500_000, 25],
-  ["Lead", 13_000_000, 18_000_000, 8],
-  ["Manager", 11_500_000, 17_500_000, 5],
-  ["Director", 16_000_000, 24_000_000, 2]
+  { name: "Junior", minimum_usd_cents: 4_500_000, maximum_usd_cents: 6_500_000, weight: 25 },
+  { name: "Mid", minimum_usd_cents: 6_500_000, maximum_usd_cents: 9_500_000, weight: 35 },
+  { name: "Senior", minimum_usd_cents: 9_500_000, maximum_usd_cents: 14_500_000, weight: 25 },
+  { name: "Lead", minimum_usd_cents: 13_000_000, maximum_usd_cents: 18_000_000, weight: 8 },
+  { name: "Manager", minimum_usd_cents: 11_500_000, maximum_usd_cents: 17_500_000, weight: 5 },
+  { name: "Director", minimum_usd_cents: 16_000_000, maximum_usd_cents: 24_000_000, weight: 2 }
 ].freeze
 
 def seed_weighted_choice(random, choices)
@@ -100,20 +99,20 @@ SEED_SIZE.times.each_slice(SEED_BATCH_SIZE) do |indexes|
   employee_rows = indexes.map do |index|
     employee_code = format("ACM-%05d", index + 1)
     country = seed_weighted_choice(SEED_RANDOM, SEED_COUNTRIES)
-    level_name, minimum_usd_cents, maximum_usd_cents, = seed_weighted_choice(
-      SEED_RANDOM,
-      SEED_LEVELS.map { |name, minimum, maximum, weight| { name: name, weight: weight } }
-    ).then do |selected|
-      SEED_LEVELS.find { |name, _minimum, _maximum, _weight| name == selected.fetch(:name) }
-    end
+    level = seed_weighted_choice(SEED_RANDOM, SEED_LEVELS)
+    level_name = level.fetch(:name)
+    minimum_usd_cents = level.fetch(:minimum_usd_cents)
+    maximum_usd_cents = level.fetch(:maximum_usd_cents)
     department_code, department_id = department_ids.sort[SEED_RANDOM.rand(department_ids.size)]
-    effective_date = Date.new(SEED_RANDOM.rand(2011..2024), SEED_RANDOM.rand(1..12), 1)
-    effective_date = [effective_date, Date.new(2025, 12, 1)].min
+    first_joining_date = Date.new(2011, 1, 1)
+    last_joining_date = Date.new(2025, 12, 31)
+    effective_date = first_joining_date + SEED_RANDOM.rand((last_joining_date - first_joining_date).to_i + 1)
 
     usd_salary_cents = SEED_RANDOM.rand(minimum_usd_cents..maximum_usd_cents)
-    usd_salary_cents = (usd_salary_cents * country.fetch(:pay_factor) + 5_000) / 10_000
+    target_usd_salary_cents = (usd_salary_cents * country.fetch(:pay_factor) + 5_000) / 10_000
     rate_micros = SEED_RATES.fetch(country.fetch(:currency))
-    local_salary_cents = (usd_salary_cents * 1_000_000 + rate_micros / 2) / rate_micros
+    local_salary_cents = (target_usd_salary_cents * 1_000_000 + rate_micros / 2) / rate_micros
+    usd_salary_cents = (local_salary_cents * rate_micros + 500_000) / 1_000_000
 
     employees_by_code[employee_code] = {
       amount_cents: local_salary_cents,
@@ -129,7 +128,7 @@ SEED_SIZE.times.each_slice(SEED_BATCH_SIZE) do |indexes|
       email: "#{employee_code.downcase}@example.com",
       country_code: country.fetch(:code),
       department_id: department_id,
-      job_title: ["Manager", "Director"].include?(level_name) ? "#{level_name}, #{department_code}" : "#{level_name} #{department_code}",
+      job_title: [ "Manager", "Director" ].include?(level_name) ? "#{level_name}, #{department_code}" : "#{level_name} #{department_code}",
       job_level: level_name,
       date_of_joining: effective_date,
       created_at: now,
