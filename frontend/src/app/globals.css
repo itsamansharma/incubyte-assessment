@@ -164,6 +164,50 @@ h2 { margin-bottom: 0; color: #20344e; font-size: 14px; font-weight: 700; letter
 .api-error p { max-width: 600px; margin: 5px 0 8px; color: #8c7953; font-size: 11px; line-height: 1.5; }
 .api-error code { color: #755d2c; font-size: 10px; }
 
+.directory-wrap { padding-top: 37px; }
+.directory-heading { align-items: center; }
+.employee-total { border: 1px solid #e0e7ef; border-radius: 7px; background: #fff; padding: 9px 12px; color: #66778b; font-size: 10px; font-weight: 600; }
+.directory-filters { display: grid; grid-template-columns: minmax(210px, 1.5fr) repeat(3, minmax(100px, 0.62fr)) repeat(2, minmax(130px, 0.85fr)); gap: 10px; align-items: end; border: 1px solid #e8edf2; border-radius: 10px; background: #fff; padding: 15px; box-shadow: 0 2px 8px rgb(24 45 74 / 2%); }
+.directory-filters label { display: flex; min-width: 0; flex-direction: column; gap: 6px; }
+.directory-filters label > span { color: #758499; font-size: 9px; font-weight: 600; }
+.directory-filters input, .sort-controls select { width: 100%; height: 34px; border: 1px solid #e2e8ef; border-radius: 6px; outline: none; background: #fff; padding: 0 9px; color: #34475e; font-size: 10px; }
+.directory-filters input:focus, .sort-controls select:focus { border-color: #829be1; box-shadow: 0 0 0 2px rgb(100 131 220 / 12%); }
+.directory-filters input::placeholder { color: #a3adba; }
+.directory-filters .employee-search { position: relative; display: block; }
+.employee-search > span { position: absolute; top: 4px; left: 10px; color: #8191a5; font-size: 18px; }
+.directory-filters .employee-search input { height: 38px; padding-left: 34px; }
+.directory-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin: 20px 2px 10px; color: #8693a2; font-size: 10px; }
+.sort-controls { display: flex; align-items: center; gap: 8px; }
+.sort-controls label { display: flex; align-items: center; gap: 7px; color: #7c8999; white-space: nowrap; }
+.sort-controls select { width: auto; min-width: 130px; height: 31px; }
+.sort-direction { width: 31px; height: 31px; border: 1px solid #e2e8ef; border-radius: 6px; background: #fff; color: #586d87; font-size: 15px; }
+.employee-table-wrap { overflow: auto; border: 1px solid #e8edf2; border-radius: 10px; background: #fff; box-shadow: 0 2px 8px rgb(24 45 74 / 2%); }
+.employee-table { width: 100%; border-collapse: collapse; text-align: left; }
+.employee-table th { height: 42px; border-bottom: 1px solid #edf0f4; padding: 0 15px; color: #98a4b2; font-size: 8px; font-weight: 700; letter-spacing: 0.8px; white-space: nowrap; }
+.employee-table td { height: 65px; border-bottom: 1px solid #f0f2f5; padding: 8px 15px; color: #52647a; font-size: 10px; white-space: nowrap; }
+.employee-table tr:last-child td { border-bottom: 0; }
+.employee-identity { display: flex; min-width: 215px; align-items: center; gap: 9px; }
+.employee-avatar { display: grid; width: 32px; height: 32px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: #edf2fb; color: #4b6391; font-size: 9px; font-weight: 700; text-transform: uppercase; }
+.employee-identity-copy { display: flex; min-width: 0; flex-direction: column; gap: 4px; }
+.employee-identity-copy strong { overflow: hidden; color: #34475e; font-size: 10px; font-weight: 600; text-overflow: ellipsis; }
+.employee-identity-copy small, .table-secondary { color: #96a1ae; font-size: 8px; }
+.table-primary, .table-secondary { display: block; }
+.table-primary { color: #3f5269; font-size: 9px; font-weight: 600; }
+.table-secondary { margin-top: 4px; }
+.location-pill, .level-pill { display: inline-flex; min-width: 28px; justify-content: center; border-radius: 5px; background: #f1f4f8; padding: 4px 6px; color: #60728a; font-size: 8px; font-weight: 600; }
+.level-pill { background: #eff3ff; color: #6379b7; }
+.date-value { color: #68798d; font-size: 9px; }
+.directory-pagination { display: flex; align-items: center; justify-content: space-between; padding: 13px 2px; color: #8a97a6; font-size: 9px; }
+.directory-pagination > div { display: flex; gap: 7px; }
+.directory-pagination button { height: 30px; border: 1px solid #dfe6ee; border-radius: 6px; background: #fff; padding: 0 10px; color: #586b81; font-size: 9px; }
+.directory-pagination button:disabled { cursor: not-allowed; color: #adb7c2; background: #fafbfc; }
+.directory-error { margin: 10px 0; }
+.empty-directory { height: 150px !important; text-align: center; }
+.empty-directory strong, .empty-directory span { display: block; }
+.empty-directory strong { margin-bottom: 6px; color: #53657b; }
+.empty-directory span { color: #929eac; }
+.table-skeleton { height: 34px; border-radius: 6px; background: linear-gradient(90deg, #f0f2f5, #f8f9fa, #f0f2f5); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
+
 .dashboard-loading { padding-top: 5px; }
 .loading-heading { width: 240px; height: 58px; margin-bottom: 23px; border-radius: 8px; background: linear-gradient(90deg, #e9edf3, #f5f7fa, #e9edf3); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
 .loading-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
@@ -182,6 +226,8 @@ h2 { margin-bottom: 0; color: #20344e; font-size: 14px; font-weight: 700; letter
   .topbar { padding: 0 26px; }
   .content-wrap { padding-right: 26px; padding-left: 26px; }
   .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .directory-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .directory-filters .employee-search { grid-column: span 3; }
 }
 
 @media (max-width: 760px) {
@@ -206,6 +252,13 @@ h2 { margin-bottom: 0; color: #20344e; font-size: 14px; font-weight: 700; letter
   .metric-topline { margin-bottom: 14px; }
   .metric-value { font-size: clamp(18px, 5vw, 23px); }
   .insights-grid { grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
+  .directory-wrap { padding-top: 27px; }
+  .directory-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; padding: 11px; }
+  .directory-filters .employee-search { grid-column: span 2; }
+  .directory-filters .salary-filter { grid-column: span 1; }
+  .directory-toolbar { align-items: flex-start; flex-direction: column; }
+  .sort-controls { align-self: flex-end; }
+  .employee-table { min-width: 850px; }
   .country-panel, .department-panel { min-height: 0; padding: 17px 16px 12px; }
   .country-list, .department-list { gap: 14px; margin-top: 18px; }
   .pay-panel { margin-top: 10px; padding: 17px 16px 12px; }

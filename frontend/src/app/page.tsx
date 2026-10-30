@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Link from "next/link";
+import AppShell from "@/components/app-shell";
 
 type Overview = {
   headcount: number;
@@ -96,67 +96,6 @@ function DashboardLoading() {
   );
 }
 
-function DashboardShell({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="app-shell">
-      <aside className="sidebar">
-        <Link className="brand" href="/" aria-label="ACME Payroll home">
-          <span className="brand-mark">A</span>
-          <span className="brand-copy">
-            <strong>acme</strong>
-            <small>PEOPLE &amp; PAYROLL</small>
-          </span>
-        </Link>
-
-        <div className="workspace-label">WORKSPACE</div>
-        <nav className="primary-nav" aria-label="Main navigation">
-          <Link className="nav-item active" href="/" aria-current="page">
-            <span className="nav-icon">◫</span>
-            <span>Overview</span>
-          </Link>
-          <span className="nav-item disabled" aria-disabled="true">
-            <span className="nav-icon">⌕</span>
-            <span>Employees</span>
-            <span className="nav-soon">Soon</span>
-          </span>
-          <span className="nav-item disabled" aria-disabled="true">
-            <span className="nav-icon">↗</span>
-            <span>Compensation</span>
-            <span className="nav-soon">Soon</span>
-          </span>
-        </nav>
-
-        <div className="sidebar-bottom">
-          <div className="secure-note">
-            <span className="secure-dot" />
-            <span>Private workspace</span>
-          </div>
-          <div className="profile-row">
-            <div className="avatar">AM</div>
-            <div className="profile-copy">
-              <strong>HR Manager</strong>
-              <small>ACME Corporation</small>
-            </div>
-            <span className="profile-menu">···</span>
-          </div>
-        </div>
-      </aside>
-
-      <main className="main-content">
-        <header className="topbar">
-          <div className="breadcrumbs"><span>Workspace</span><span className="crumb-divider">/</span><strong>Overview</strong></div>
-          <div className="topbar-actions">
-            <span className="data-status"><span className="status-dot" />Live data</span>
-            <button className="icon-button" type="button" aria-label="Notifications">♧<i /></button>
-            <div className="top-avatar">AM</div>
-          </div>
-        </header>
-        {children}
-      </main>
-    </div>
-  );
-}
-
 function MetricCard({
   label,
   value,
@@ -189,7 +128,7 @@ async function DashboardContent() {
     data = await loadDashboard();
   } catch {
     return (
-      <DashboardShell>
+      <AppShell activePage="overview">
         <section className="content-wrap">
           <div className="page-heading">
             <div><p className="eyebrow">GLOBAL WORKFORCE</p><h1>Overview</h1></div>
@@ -203,7 +142,7 @@ async function DashboardContent() {
             </div>
           </div>
         </section>
-      </DashboardShell>
+      </AppShell>
     );
   }
 
@@ -220,7 +159,7 @@ async function DashboardContent() {
   const highestLevelHeadcount = Math.max(...headcountByLevel.map((item) => item.population), 1);
 
   return (
-    <DashboardShell>
+    <AppShell activePage="overview">
       <section className="content-wrap">
         <div className="page-heading">
           <div>
@@ -336,13 +275,13 @@ async function DashboardContent() {
 
         <footer className="page-footer"><span>ACME payroll overview</span><span>Amounts shown in USD cents, rounded to whole dollars</span></footer>
       </section>
-    </DashboardShell>
+    </AppShell>
   );
 }
 
 export default function Home() {
   return (
-    <Suspense fallback={<DashboardShell><section className="content-wrap"><DashboardLoading /></section></DashboardShell>}>
+    <Suspense fallback={<AppShell activePage="overview"><section className="content-wrap"><DashboardLoading /></section></AppShell>}>
       <DashboardContent />
     </Suspense>
   );
