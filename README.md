@@ -16,3 +16,15 @@ Rails 8.1 API for the Incubyte Ruby on Rails developer assessment. Product scope
 4. Start the API with `bin/rails server`.
 
 The health endpoint is `GET /up`. API routes live under `/api/v1`.
+
+## Frontend
+
+The Next.js dashboard is in [`frontend/`](frontend/README.md). Start PostgreSQL and Rails on port `3000`, then run:
+
+```sh
+cd frontend
+pnpm install
+pnpm dev
+```
+
+Open [http://localhost:3001](http://localhost:3001). Set `RAILS_API_URL` in `frontend/.env.local` to point at a Rails API running elsewhere.
