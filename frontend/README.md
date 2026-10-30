@@ -21,3 +21,5 @@ Open [http://localhost:3001](http://localhost:3001). The overview uses the serve
 - `pnpm lint` runs ESLint.
 - `pnpm build` creates a production build.
 - `pnpm start` serves the production build on port `3001`.
+
+In hosted environments, `pnpm start` uses the platform-provided `PORT` and listens on all network interfaces.
