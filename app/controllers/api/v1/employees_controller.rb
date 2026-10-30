@@ -52,6 +52,35 @@ module Api
         render json: { error: error.message }, status: :bad_request
       end
 
+      def show
+        employee = if params[:id].to_s.match?(/\A\d+\z/)
+          Employee.includes(:department, :active_compensation, :compensations).find_by(id: params[:id])
+        end
+
+        return render json: { error: "Employee not found" }, status: :not_found unless employee
+
+        render json: {
+          id: employee.id,
+          employee_code: employee.employee_code,
+          first_name: employee.first_name,
+          last_name: employee.last_name,
+          email: employee.email,
+          country_code: employee.country_code,
+          department: {
+            name: employee.department.name,
+            code: employee.department.code
+          },
+          job_title: employee.job_title,
+          job_level: employee.job_level,
+          date_of_joining: employee.date_of_joining,
+          current_compensation: serialize_compensation(employee.active_compensation),
+          compensation_history: employee.compensations
+            .sort_by { |compensation| [ compensation.effective_date, compensation.created_at, compensation.id ] }
+            .reverse
+            .map { |compensation| serialize_compensation(compensation) }
+        }
+      end
+
       private
 
       def base_relation
@@ -196,6 +225,19 @@ module Api
               effective_date: effective_date
             }
                         end
+        }
+      end
+
+      def serialize_compensation(compensation)
+        return unless compensation
+
+        {
+          amount_cents: compensation.amount_cents,
+          currency: compensation.currency,
+          amount_usd_cents: compensation.amount_usd_cents,
+          effective_date: compensation.effective_date,
+          change_reason: compensation.change_reason,
+          is_active: compensation.is_active
         }
       end
     end
