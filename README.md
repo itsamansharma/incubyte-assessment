@@ -32,3 +32,9 @@ Open [http://localhost:3001](http://localhost:3001). If Rails runs elsewhere, se
 ## Deployment
 
 The repository includes a Render Blueprint in [`render.yaml`](render.yaml) for the Rails API, Next.js dashboard, and PostgreSQL database. To deploy, connect the private GitHub repository to Render and create a Blueprint from the repository. The Blueprint currently uses free instances for a demo: web services sleep after 15 minutes of inactivity, and the free PostgreSQL database expires after 30 days. See [Render free-tier limits](https://render.com/docs/free) before deploying. Keep this demo dataset synthetic: the assessment API does not include authentication.
+
+## Engineering artifacts
+
+- [Architecture notes](docs/architecture.md) describe the system boundaries, data model, and query approach.
+- [AI use and review notes](docs/ai-use.md) summarize the AI-assisted workflow and representative instructions.
+- [Performance baseline](PERFORMANCE.md) records local API measurements and how to reproduce them.
