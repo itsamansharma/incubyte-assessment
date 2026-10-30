@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import AppShell from "@/components/app-shell";
+import { apiRequest } from "@/lib/api";
+import { formatDate, formatMoney, formatNumber } from "@/lib/format";
 
 type Employee = {
   id: number;
@@ -27,22 +29,6 @@ type EmployeeResponse = {
   employees: Employee[];
   pagination: { page: number; per_page: number; total_count: number; total_pages: number };
 };
-
-const apiBaseUrl = (process.env.NEXT_PUBLIC_RAILS_API_URL ?? "http://127.0.0.1:3000").replace(/\/$/, "");
-
-function formatSalary(employee: Employee): string {
-  if (!employee.compensation) return "—";
-
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: employee.compensation.currency,
-    maximumFractionDigits: 0,
-  }).format(employee.compensation.amount_cents / 100);
-}
-
-function formatDate(date: string): string {
-  return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${date}T00:00:00Z`));
-}
 
 export default function EmployeesPage() {
   const [query, setQuery] = useState("");
@@ -74,12 +60,7 @@ export default function EmployeesPage() {
     if (minimumSalary) params.set("min_salary_usd_cents", String(Math.round(Number(minimumSalary) * 100)));
     if (maximumSalary) params.set("max_salary_usd_cents", String(Math.round(Number(maximumSalary) * 100)));
 
-    fetch(`${apiBaseUrl}/api/v1/employees?${params}`, { signal: controller.signal })
-      .then(async (response) => {
-        const body = await response.json();
-        if (!response.ok) throw new Error(body.error ?? `Request failed (${response.status})`);
-        return body as EmployeeResponse;
-      })
+    apiRequest<EmployeeResponse>(`/api/v1/employees?${params}`, { signal: controller.signal })
       .then(setData)
       .catch((requestError: unknown) => {
         if (requestError instanceof DOMException && requestError.name === "AbortError") return;
@@ -116,7 +97,7 @@ export default function EmployeesPage() {
             <h1>Employees</h1>
             <p className="page-subtitle">Search, filter, and explore your global team.</p>
           </div>
-          <span className="employee-total">{data ? `${new Intl.NumberFormat("en-US").format(data.pagination.total_count)} employees` : "Employee directory"}</span>
+          <span className="employee-total">{data ? `${formatNumber(data.pagination.total_count)} employees` : "Employee directory"}</span>
         </div>
 
         <section className="directory-filters" aria-label="Employee filters">
@@ -132,7 +113,7 @@ export default function EmployeesPage() {
         </section>
 
         <div className="directory-toolbar">
-          <span>{loading ? "Updating results…" : `Showing ${firstResult}–${lastResult} of ${new Intl.NumberFormat("en-US").format(data?.pagination.total_count ?? 0)}`}</span>
+          <span>{loading ? "Updating results…" : `Showing ${firstResult}–${lastResult} of ${formatNumber(data?.pagination.total_count ?? 0)}`}</span>
           <div className="sort-controls">
             <label>Sort by <select value={sort} onChange={(event) => { setSort(event.target.value); resetPage(); }}>
               <option value="name">Name</option><option value="employee_code">Employee ID</option><option value="department">Department</option><option value="country_code">Country</option><option value="salary">Salary</option><option value="date_of_joining">Start date</option>
@@ -152,7 +133,7 @@ export default function EmployeesPage() {
                 <td><strong className="table-primary">{employee.department}</strong><small className="table-secondary">{employee.job_title}</small></td>
                 <td><span className="location-pill">{employee.country_code}</span></td>
                 <td><span className="level-pill">{employee.job_level}</span></td>
-                <td><strong className="table-primary">{formatSalary(employee)}</strong><small className="table-secondary">{employee.compensation?.currency ?? "No active compensation"}</small></td>
+                <td><strong className="table-primary">{formatMoney(employee.compensation?.amount_cents ?? null, employee.compensation?.currency)}</strong><small className="table-secondary">{employee.compensation?.currency ?? "No active compensation"}</small></td>
                 <td><span className="date-value">{formatDate(employee.date_of_joining)}</span></td>
               </tr>)}
               {!loading && !error && data?.employees.length === 0 && <tr><td className="empty-directory" colSpan={6}><strong>No employees found</strong><span>Try changing or clearing your filters.</span></td></tr>}

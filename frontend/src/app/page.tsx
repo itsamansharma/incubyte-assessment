@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import AppShell from "@/components/app-shell";
+import { countryName, formatMoney, formatNumber } from "@/lib/format";
 
 type Overview = {
   headcount: number;
@@ -60,25 +61,6 @@ async function loadDashboard(): Promise<DashboardData> {
     countries: breakdown.countries,
     payBands: payBandResponse.groups,
   };
-}
-
-function formatMoney(cents: number | null, compact = false): string {
-  if (cents === null) return "—";
-
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-    notation: compact ? "compact" : "standard",
-  }).format(cents / 100);
-}
-
-function formatNumber(value: number): string {
-  return new Intl.NumberFormat("en-US").format(value);
-}
-
-function countryName(code: string): string {
-  return new Intl.DisplayNames(["en"], { type: "region" }).of(code) ?? code;
 }
 
 function DashboardLoading() {
@@ -179,7 +161,7 @@ async function DashboardContent() {
             <span className="error-symbol">!</span>
             <div>
               <strong>Payroll data is unavailable</strong>
-              <p>Start the Rails API and refresh this page. The dashboard reads live data from your local payroll database.</p>
+              <p>Try again shortly or verify that the payroll API is available.</p>
               <code>{apiBaseUrl}</code>
             </div>
           </div>
@@ -221,7 +203,7 @@ async function DashboardContent() {
           />
           <MetricCard
             label="Annual payroll"
-            value={formatMoney(data.overview.annual_payroll_usd_cents, true)}
+            value={formatMoney(data.overview.annual_payroll_usd_cents, "USD", true)}
             detail="Converted to USD"
             icon="＄"
             tone="green"
@@ -258,9 +240,9 @@ async function DashboardContent() {
                       <div className="country-title"><strong>{countryName(country.country_code ?? "")}</strong><span>{formatNumber(country.headcount)}</span></div>
                       <div className="progress-track"><span className="progress-fill country-fill" style={{ width: `${Math.max(share * 100, 2)}%` }} /></div>
                       <div className="country-summary">
-                        <span>Payroll <strong>{formatMoney(country.annual_payroll_usd_cents, true)}</strong></span>
-                        <span>Avg <strong>{formatMoney(country.average_annual_salary_usd_cents, true)}</strong></span>
-                        <span>Median <strong>{formatMoney(country.median_annual_salary_usd_cents, true)}</strong></span>
+                        <span>Payroll <strong>{formatMoney(country.annual_payroll_usd_cents, "USD", true)}</strong></span>
+                        <span>Avg <strong>{formatMoney(country.average_annual_salary_usd_cents, "USD", true)}</strong></span>
+                        <span>Median <strong>{formatMoney(country.median_annual_salary_usd_cents, "USD", true)}</strong></span>
                       </div>
                     </div>
                     <span className="country-share">{Math.round(share * 100)}%</span>
@@ -284,12 +266,12 @@ async function DashboardContent() {
                   <div className="department-row" key={department.department}>
                     <div className="department-row-top">
                     <div className="department-name"><span className={`department-indicator color-${(index % 5) + 1}`} />{department.department}</div>
-                      <strong>{formatMoney(amount, true)}</strong>
+                      <strong>{formatMoney(amount, "USD", true)}</strong>
                     </div>
                     <div className="department-row-bottom">
                       <span>{formatNumber(department.headcount)} employees</span>
-                      <span>Avg {formatMoney(department.average_annual_salary_usd_cents, true)}</span>
-                      <span>Median {formatMoney(department.median_annual_salary_usd_cents, true)}</span>
+                      <span>Avg {formatMoney(department.average_annual_salary_usd_cents, "USD", true)}</span>
+                      <span>Median {formatMoney(department.median_annual_salary_usd_cents, "USD", true)}</span>
                     </div>
                     <div className="progress-track department-track"><span className={`progress-fill department-fill color-${(index % 5) + 1}`} style={{ width: `${Math.max(percentage * 100, 3)}%` }} /></div>
                   </div>

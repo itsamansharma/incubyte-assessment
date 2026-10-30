@@ -24,7 +24,7 @@ module Api
 
         render json: {
           employee_id: employee.id,
-          compensation: serialize_compensation(compensation)
+          compensation: CompensationSerializer.as_json(compensation)
         }, status: :created
       rescue ActiveRecord::RecordNotFound
         render json: { error: "Employee not found" }, status: :not_found
@@ -88,18 +88,6 @@ module Api
         end
 
         [ attributes, amount_usd_cents ]
-      end
-
-      def serialize_compensation(compensation)
-        {
-          id: compensation.id,
-          amount_cents: compensation.amount_cents,
-          currency: compensation.currency,
-          amount_usd_cents: compensation.amount_usd_cents,
-          effective_date: compensation.effective_date,
-          change_reason: compensation.change_reason,
-          is_active: compensation.is_active
-        }
       end
     end
   end

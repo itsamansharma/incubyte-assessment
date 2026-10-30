@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import AppShell from "@/components/app-shell";
+import { apiRequest } from "@/lib/api";
+import { countryName, formatDate, formatMoney } from "@/lib/format";
 
 type Compensation = {
   id: number;
@@ -30,16 +32,6 @@ type EmployeeProfileData = {
   compensation_history: Compensation[];
 };
 
-const apiBaseUrl = (process.env.NEXT_PUBLIC_RAILS_API_URL ?? "http://127.0.0.1:3000").replace(/\/$/, "");
-
-function formatMoney(cents: number, currency: string): string {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency, maximumFractionDigits: 0 }).format(cents / 100);
-}
-
-function formatDate(value: string): string {
-  return new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${value}T00:00:00Z`));
-}
-
 export default function EmployeeProfile() {
   const { id } = useParams<{ id: string }>();
   const [employee, setEmployee] = useState<EmployeeProfileData | null>(null);
@@ -55,12 +47,7 @@ export default function EmployeeProfile() {
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch(`${apiBaseUrl}/api/v1/employees/${encodeURIComponent(id)}`, { signal: controller.signal })
-      .then(async (response) => {
-        const body = await response.json();
-        if (!response.ok) throw new Error(body.error ?? `Request failed (${response.status})`);
-        return body as EmployeeProfileData;
-      })
+    apiRequest<EmployeeProfileData>(`/api/v1/employees/${encodeURIComponent(id)}`, { signal: controller.signal })
       .then((data: EmployeeProfileData) => {
         setEmployee(data);
         if (data.current_compensation) setCurrency(data.current_compensation.currency);
@@ -89,7 +76,7 @@ export default function EmployeeProfile() {
 
     setSaving(true);
     try {
-      const response = await fetch(`${apiBaseUrl}/api/v1/employees/${encodeURIComponent(id)}/compensations`, {
+      await apiRequest<{ compensation: Compensation }>(`/api/v1/employees/${encodeURIComponent(id)}/compensations`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -101,12 +88,13 @@ export default function EmployeeProfile() {
           },
         }),
       });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error ?? result.errors?.join(", ") ?? `Request failed (${response.status})`);
-
-      const refreshed = await fetch(`${apiBaseUrl}/api/v1/employees/${encodeURIComponent(id)}`);
-      if (!refreshed.ok) throw new Error("Salary was saved, but the profile could not be refreshed. Reload the page to see the update.");
-      setEmployee(await refreshed.json() as EmployeeProfileData);
+      let refreshed: EmployeeProfileData;
+      try {
+        refreshed = await apiRequest<EmployeeProfileData>(`/api/v1/employees/${encodeURIComponent(id)}`);
+      } catch {
+        throw new Error("Salary was saved, but the profile could not be refreshed. Reload the page to see the update.");
+      }
+      setEmployee(refreshed);
       setSalary("");
       setChangeReason("");
       setSaved(true);
@@ -136,7 +124,7 @@ export default function EmployeeProfile() {
             <article className="panel profile-info-panel"><p className="panel-kicker">PERSONAL DETAILS</p><h2>About</h2>
               <dl className="profile-details">
                 <div><dt>Email</dt><dd><a href={`mailto:${employee.email}`}>{employee.email}</a></dd></div>
-                <div><dt>Location</dt><dd>{new Intl.DisplayNames(["en"], { type: "region" }).of(employee.country_code) ?? employee.country_code}</dd></div>
+                <div><dt>Location</dt><dd>{countryName(employee.country_code)}</dd></div>
                 <div><dt>Department</dt><dd>{employee.department.name} <span className="detail-code">{employee.department.code}</span></dd></div>
                 <div><dt>Job level</dt><dd>{employee.job_level}</dd></div>
                 <div><dt>Start date</dt><dd>{formatDate(employee.date_of_joining)}</dd></div>
@@ -146,7 +134,7 @@ export default function EmployeeProfile() {
               {employee.current_compensation ? <>
                 <strong className="current-salary">{formatMoney(employee.current_compensation.amount_cents, employee.current_compensation.currency)}</strong>
                 <p className="salary-equivalent">{formatMoney(employee.current_compensation.amount_usd_cents, "USD")} USD equivalent</p>
-                <div className="salary-effective">Effective {formatDate(employee.current_compensation.effective_date)}</div>
+                <div className="salary-effective">Effective {formatDate(employee.current_compensation.effective_date, "long")}</div>
               </> : <p className="no-current-salary">No active compensation record</p>}
             </article>
           </section>
@@ -168,7 +156,7 @@ export default function EmployeeProfile() {
             <div className="panel-heading"><div><p className="panel-kicker">COMPENSATION</p><h2>Salary history</h2><p className="panel-description">A record of compensation changes for this employee.</p></div><span className="history-count">{employee.compensation_history.length} {employee.compensation_history.length === 1 ? "record" : "records"}</span></div>
             {employee.compensation_history.length ? <div className="history-table-wrap"><table className="history-table"><thead><tr><th>EFFECTIVE DATE</th><th>ANNUAL SALARY</th><th>USD EQUIVALENT</th><th>CHANGE REASON</th><th>STATUS</th></tr></thead><tbody>
               {employee.compensation_history.map((compensation) => <tr key={compensation.id}>
-                <td>{formatDate(compensation.effective_date)}</td>
+                <td>{formatDate(compensation.effective_date, "long")}</td>
                 <td><strong>{formatMoney(compensation.amount_cents, compensation.currency)}</strong></td>
                 <td>{formatMoney(compensation.amount_usd_cents, "USD")}</td>
                 <td>{compensation.change_reason}</td>
