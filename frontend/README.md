@@ -13,7 +13,7 @@ Next.js frontend for the ACME global salary management application. The overview
    pnpm dev
    ```
 
-Open [http://localhost:3001](http://localhost:3001). The API base URL is configured with the server-only `RAILS_API_URL` environment variable.
+Open [http://localhost:3001](http://localhost:3001). The overview uses the server-side `RAILS_API_URL`; employee search and profiles use `NEXT_PUBLIC_RAILS_API_URL` in the browser. Both default to `http://127.0.0.1:3000` and should point to the same Rails API.
 
 ## Available commands
 

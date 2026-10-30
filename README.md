@@ -27,4 +27,4 @@ pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:3001](http://localhost:3001). Set `RAILS_API_URL` in `frontend/.env.local` to point at a Rails API running elsewhere.
+Open [http://localhost:3001](http://localhost:3001). If Rails runs elsewhere, set both `RAILS_API_URL` and `NEXT_PUBLIC_RAILS_API_URL` in `frontend/.env.local` to the API base URL.
