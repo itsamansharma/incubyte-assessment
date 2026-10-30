@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       get "dashboard/overview", to: "dashboard#overview"
       get "dashboard/breakdown", to: "dashboard#breakdown"
+      get "dashboard/pay_bands", to: "dashboard#pay_bands"
     end
   end
 
