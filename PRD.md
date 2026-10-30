@@ -1,4 +1,3 @@
-/Users/aman/.rvm/scripts/rvm:29: operation not permitted: ps
 # ACME Global Salary Management — Phase 1 PRD
 
 **Version:** 1.0 · **Persona:** Global HR Manager · **Scale:** 10,000 employees in the US, UK, India, Germany, and Singapore
