@@ -194,7 +194,7 @@ module Api
 
       def parse_integer(value, name)
         string_value = value.to_s
-        unless string_value.match?(/\A\d+\z/)
+        unless string_value.match?(/\A-?\d+\z/)
           raise ActionController::BadRequest, "#{name} must be an integer"
         end
 
