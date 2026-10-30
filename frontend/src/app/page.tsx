@@ -188,10 +188,9 @@ async function DashboardContent() {
     );
   }
 
-  const topDepartments = [...data.departments]
-    .sort((first, second) => second.annual_payroll_usd_cents - first.annual_payroll_usd_cents)
-    .slice(0, 5);
-  const highestDepartmentPayroll = Math.max(...topDepartments.map((department) => department.annual_payroll_usd_cents), 1);
+  const departmentsByPayroll = [...data.departments]
+    .sort((first, second) => second.annual_payroll_usd_cents - first.annual_payroll_usd_cents);
+  const highestDepartmentPayroll = Math.max(...departmentsByPayroll.map((department) => department.annual_payroll_usd_cents), 1);
   const headcountByLevel = ["Junior", "Mid", "Senior", "Lead", "Manager", "Director"].map((level) => {
     const bands = data.payBands.filter((band) => band.job_level === level);
     const population = bands.reduce((sum, band) => sum + band.headcount, 0);
@@ -258,6 +257,11 @@ async function DashboardContent() {
                     <div className="country-details">
                       <div className="country-title"><strong>{countryName(country.country_code ?? "")}</strong><span>{formatNumber(country.headcount)}</span></div>
                       <div className="progress-track"><span className="progress-fill country-fill" style={{ width: `${Math.max(share * 100, 2)}%` }} /></div>
+                      <div className="country-summary">
+                        <span>Payroll <strong>{formatMoney(country.annual_payroll_usd_cents, true)}</strong></span>
+                        <span>Avg <strong>{formatMoney(country.average_annual_salary_usd_cents, true)}</strong></span>
+                        <span>Median <strong>{formatMoney(country.median_annual_salary_usd_cents, true)}</strong></span>
+                      </div>
                     </div>
                     <span className="country-share">{Math.round(share * 100)}%</span>
                   </div>
@@ -273,20 +277,21 @@ async function DashboardContent() {
               <span className="panel-menu" aria-hidden="true">···</span>
             </div>
             <div className="department-list">
-              {topDepartments.map((department, index) => {
+              {departmentsByPayroll.map((department, index) => {
                 const amount = department.annual_payroll_usd_cents;
                 const percentage = amount / highestDepartmentPayroll;
                 return (
                   <div className="department-row" key={department.department}>
                     <div className="department-row-top">
-                      <div className="department-name"><span className={`department-indicator color-${index + 1}`} />{department.department}</div>
+                    <div className="department-name"><span className={`department-indicator color-${(index % 5) + 1}`} />{department.department}</div>
                       <strong>{formatMoney(amount, true)}</strong>
                     </div>
                     <div className="department-row-bottom">
                       <span>{formatNumber(department.headcount)} employees</span>
-                      <span>{formatMoney(department.average_annual_salary_usd_cents)} avg.</span>
+                      <span>Avg {formatMoney(department.average_annual_salary_usd_cents, true)}</span>
+                      <span>Median {formatMoney(department.median_annual_salary_usd_cents, true)}</span>
                     </div>
-                    <div className="progress-track department-track"><span className={`progress-fill department-fill color-${index + 1}`} style={{ width: `${Math.max(percentage * 100, 3)}%` }} /></div>
+                    <div className="progress-track department-track"><span className={`progress-fill department-fill color-${(index % 5) + 1}`} style={{ width: `${Math.max(percentage * 100, 3)}%` }} /></div>
                   </div>
                 );
               })}

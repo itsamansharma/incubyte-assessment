@@ -107,7 +107,7 @@ h1 { margin-bottom: 6px; color: #192d46; font-size: 28px; font-weight: 700; lett
 .panel-kicker { margin-bottom: 5px; color: #98a4b2; font-size: 8px; letter-spacing: 1.45px; }
 h2 { margin-bottom: 0; color: #20344e; font-size: 14px; font-weight: 700; letter-spacing: -0.15px; }
 .panel-menu { color: #98a5b3; font-size: 19px; line-height: 12px; letter-spacing: 1px; }
-.country-list { display: grid; gap: 17px; margin-top: 22px; }
+.country-list { display: grid; gap: 16px; margin-top: 22px; }
 .country-row { display: grid; grid-template-columns: 29px minmax(0, 1fr) 34px; align-items: center; gap: 11px; }
 .country-code { display: grid; width: 28px; height: 28px; place-items: center; border-radius: 8px; background: #eef3fb; color: #48618b; font-size: 8px; font-weight: 700; }
 .country-in { background: #fff2e4; color: #b77b31; }
@@ -120,6 +120,8 @@ h2 { margin-bottom: 0; color: #20344e; font-size: 14px; font-weight: 700; letter
 .country-share { color: #7b8999; font-size: 9px; text-align: right; }
 .progress-track { overflow: hidden; height: 5px; border-radius: 10px; background: #edf1f5; }
 .progress-fill { display: block; height: 100%; border-radius: inherit; }
+.country-summary { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 8px; margin-top: 6px; color: #98a3b0; font-size: 8px; }
+.country-summary strong { color: #62748b; font-size: 8px; font-weight: 600; }
 .country-fill { background: linear-gradient(90deg, #7793e7, #5274d6); }
 .panel-footnote { margin-top: 18px; border-top: 1px solid #f0f2f5; padding-top: 11px; color: #97a3b0; font-size: 9px; }
 
@@ -134,7 +136,7 @@ h2 { margin-bottom: 0; color: #20344e; font-size: 14px; font-weight: 700; letter
 .color-3 { background: #a180d2; }
 .color-4 { background: #df9a58; }
 .color-5 { background: #da7484; }
-.department-row-bottom { margin-bottom: 7px; color: #96a1ae; font-size: 8px; }
+.department-row-bottom { flex-wrap: wrap; margin-bottom: 7px; color: #96a1ae; font-size: 8px; }
 .department-track { height: 4px; }
 .department-fill.color-1 { background: #6886de; }
 .department-fill.color-2 { background: #43aa91; }
