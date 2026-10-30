@@ -190,6 +190,8 @@ h2 { margin-bottom: 0; color: #20344e; font-size: 14px; font-weight: 700; letter
 .employee-avatar { display: grid; width: 32px; height: 32px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: #edf2fb; color: #4b6391; font-size: 9px; font-weight: 700; text-transform: uppercase; }
 .employee-identity-copy { display: flex; min-width: 0; flex-direction: column; gap: 4px; }
 .employee-identity-copy strong { overflow: hidden; color: #34475e; font-size: 10px; font-weight: 600; text-overflow: ellipsis; }
+.employee-name-link { overflow: hidden; color: #34475e; font-size: 10px; font-weight: 600; text-overflow: ellipsis; }
+.employee-name-link:hover { color: #4169c8; text-decoration: underline; text-underline-offset: 2px; }
 .employee-identity-copy small, .table-secondary { color: #96a1ae; font-size: 8px; }
 .table-primary, .table-secondary { display: block; }
 .table-primary { color: #3f5269; font-size: 9px; font-weight: 600; }
@@ -207,6 +209,42 @@ h2 { margin-bottom: 0; color: #20344e; font-size: 14px; font-weight: 700; letter
 .empty-directory strong { margin-bottom: 6px; color: #53657b; }
 .empty-directory span { color: #929eac; }
 .table-skeleton { height: 34px; border-radius: 6px; background: linear-gradient(90deg, #f0f2f5, #f8f9fa, #f0f2f5); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
+
+.profile-wrap { padding-top: 28px; }
+.back-to-directory { display: inline-flex; align-items: center; gap: 7px; margin-bottom: 16px; color: #74849a; font-size: 10px; }
+.back-to-directory:hover { color: #4169c8; }
+.profile-header { display: flex; min-height: 126px; align-items: center; justify-content: space-between; gap: 20px; padding: 22px 24px; }
+.profile-person { display: flex; align-items: center; gap: 15px; }
+.profile-avatar { display: grid; width: 58px; height: 58px; place-items: center; border-radius: 17px; background: #edf2fb; color: #49638f; font-size: 17px; font-weight: 700; text-transform: uppercase; }
+.profile-person .eyebrow { margin-bottom: 5px; }
+.profile-person h1 { margin-bottom: 5px; font-size: 23px; }
+.profile-code { border: 1px solid #e5eaf0; border-radius: 6px; padding: 7px 9px; color: #718197; font-size: 9px; font-weight: 600; }
+.profile-overview-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 14px; margin-top: 14px; }
+.profile-info-panel, .current-pay-panel { min-height: 228px; padding: 19px 20px; }
+.profile-details { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 25px; margin: 21px 0 0; }
+.profile-details div { min-width: 0; }
+.profile-details dt { margin-bottom: 5px; color: #929eac; font-size: 9px; }
+.profile-details dd { overflow: hidden; margin: 0; color: #40536b; font-size: 10px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.profile-details dd a:hover { color: #4169c8; }
+.detail-code { margin-left: 5px; color: #98a3b0; font-size: 8px; font-weight: 400; }
+.current-pay-panel { background: linear-gradient(140deg, #fff 45%, #f5f8ff); }
+.current-salary { display: block; margin-top: 23px; color: #1f3552; font-size: 30px; letter-spacing: -1px; }
+.salary-equivalent { margin: 6px 0 15px; color: #718197; font-size: 10px; }
+.salary-effective { border-top: 1px solid #edf0f4; padding-top: 11px; color: #929eac; font-size: 9px; }
+.no-current-salary { margin-top: 25px; color: #8a97a6; font-size: 10px; }
+.history-panel { margin-top: 14px; padding: 20px 20px 8px; }
+.history-count { border: 1px solid #e5eaf0; border-radius: 6px; padding: 6px 8px; color: #7e8da0; font-size: 9px; white-space: nowrap; }
+.history-table-wrap { overflow: auto; margin-top: 17px; }
+.history-table { width: 100%; border-collapse: collapse; text-align: left; }
+.history-table th { height: 37px; border-bottom: 1px solid #edf0f4; color: #9aa5b2; font-size: 8px; font-weight: 700; letter-spacing: 0.7px; white-space: nowrap; }
+.history-table td { height: 51px; border-bottom: 1px solid #f0f2f5; color: #68798d; font-size: 9px; white-space: nowrap; }
+.history-table tbody tr:last-child td { border-bottom: 0; }
+.history-table td strong { color: #445870; font-size: 9px; }
+.compensation-status { display: inline-flex; border-radius: 5px; background: #f1f3f6; padding: 4px 7px; color: #758397; font-size: 8px; }
+.compensation-status.active { background: #e9f7f1; color: #278a6b; }
+.history-empty { padding: 35px 0; color: #8d99a7; font-size: 10px; text-align: center; }
+.profile-loading { margin-top: 20px; }
+.profile-loading-panel { min-height: 320px; }
 
 .dashboard-loading { padding-top: 5px; }
 .loading-heading { width: 240px; height: 58px; margin-bottom: 23px; border-radius: 8px; background: linear-gradient(90deg, #e9edf3, #f5f7fa, #e9edf3); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
@@ -228,6 +266,7 @@ h2 { margin-bottom: 0; color: #20344e; font-size: 14px; font-weight: 700; letter
   .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .directory-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .directory-filters .employee-search { grid-column: span 3; }
+  .profile-overview-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 760px) {
@@ -256,6 +295,14 @@ h2 { margin-bottom: 0; color: #20344e; font-size: 14px; font-weight: 700; letter
   .directory-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; padding: 11px; }
   .directory-filters .employee-search { grid-column: span 2; }
   .directory-filters .salary-filter { grid-column: span 1; }
+  .profile-header { min-height: 105px; padding: 16px; }
+  .profile-avatar { width: 46px; height: 46px; border-radius: 13px; font-size: 14px; }
+  .profile-person { gap: 10px; }
+  .profile-person h1 { font-size: 19px; }
+  .profile-info-panel, .current-pay-panel, .history-panel { padding-right: 15px; padding-left: 15px; }
+  .profile-details { gap: 14px; }
+  .history-table { min-width: 650px; }
+  .current-salary { font-size: 27px; }
   .directory-toolbar { align-items: flex-start; flex-direction: column; }
   .sort-controls { align-self: flex-end; }
   .employee-table { min-width: 850px; }

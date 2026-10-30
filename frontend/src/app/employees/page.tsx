@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import AppShell from "@/components/app-shell";
 
 type Employee = {
@@ -147,7 +148,7 @@ export default function EmployeesPage() {
             <thead><tr><th>EMPLOYEE</th><th>DEPARTMENT</th><th>LOCATION</th><th>JOB LEVEL</th><th>ANNUAL SALARY</th><th>START DATE</th></tr></thead>
             <tbody>
               {data?.employees.map((employee) => <tr key={employee.id}>
-                <td><div className="employee-identity"><span className="employee-avatar">{employee.first_name[0]}{employee.last_name[0]}</span><span className="employee-identity-copy"><strong>{employee.first_name} {employee.last_name}</strong><small>{employee.employee_code} · {employee.email}</small></span></div></td>
+                <td><div className="employee-identity"><span className="employee-avatar">{employee.first_name[0]}{employee.last_name[0]}</span><span className="employee-identity-copy"><Link className="employee-name-link" href={`/employees/${employee.id}`}>{employee.first_name} {employee.last_name}</Link><small>{employee.employee_code} · {employee.email}</small></span></div></td>
                 <td><strong className="table-primary">{employee.department}</strong><small className="table-secondary">{employee.job_title}</small></td>
                 <td><span className="location-pill">{employee.country_code}</span></td>
                 <td><span className="level-pill">{employee.job_level}</span></td>
