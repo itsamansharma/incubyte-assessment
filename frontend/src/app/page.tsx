@@ -121,6 +121,48 @@ function MetricCard({
   );
 }
 
+function PayBandAnalysis({ bands }: { bands: PayBand[] }) {
+  const departments = [...new Set(bands.map((band) => band.department))];
+  const levelOrder = ["Junior", "Mid", "Senior", "Lead", "Manager", "Director"];
+
+  return (
+    <section className="panel pay-band-panel">
+      <div className="panel-heading">
+        <div><p className="panel-kicker">COMPENSATION ANALYTICS</p><h2>Salary ranges by department</h2><p className="panel-description">Annual USD-equivalent salary percentiles for each job level.</p></div>
+        <span className="pay-band-legend"><i className="p25-dot" />P25 <i className="median-dot" />Median <i className="p75-dot" />P75</span>
+      </div>
+      <div className="pay-band-departments">
+        {departments.map((department, index) => {
+          const groups = bands
+            .filter((band) => band.department === department)
+            .sort((first, second) => levelOrder.indexOf(first.job_level) - levelOrder.indexOf(second.job_level));
+          const departmentHeadcount = groups.reduce((total, group) => total + group.headcount, 0);
+
+          return (
+            <details className="pay-band-department" key={department} open={index === 0}>
+              <summary><strong>{department}</strong><span>{formatNumber(departmentHeadcount)} employees</span></summary>
+              <div className="pay-band-table-wrap">
+                <table className="pay-band-table">
+                  <thead><tr><th>JOB LEVEL</th><th>TEAM SIZE</th><th>P25</th><th>MEDIAN</th><th>P75</th></tr></thead>
+                  <tbody>{groups.map((band) => <tr key={band.job_level}>
+                    <td><strong>{band.job_level}</strong></td>
+                    <td>{formatNumber(band.headcount)}</td>
+                    <td>{formatMoney(band.p25_annual_salary_usd_cents)}</td>
+                    <td className="pay-band-median">{formatMoney(band.median_annual_salary_usd_cents)}</td>
+                    <td>{formatMoney(band.p75_annual_salary_usd_cents)}</td>
+                  </tr>)}</tbody>
+                </table>
+              </div>
+            </details>
+          );
+        })}
+        {departments.length === 0 && <div className="history-empty">No active compensation data is available for pay-band analysis.</div>}
+      </div>
+      <div className="panel-footnote">Percentiles use employees with active compensation records. Amounts are normalized to USD.</div>
+    </section>
+  );
+}
+
 async function DashboardContent() {
   let data: DashboardData;
 
@@ -272,6 +314,8 @@ async function DashboardContent() {
           </div>
           <div className="panel-footnote">Counts are based on active employee records.</div>
         </section>
+
+        <PayBandAnalysis bands={data.payBands} />
 
         <footer className="page-footer"><span>ACME payroll overview</span><span>Amounts shown in USD cents, rounded to whole dollars</span></footer>
       </section>

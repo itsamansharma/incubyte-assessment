@@ -245,6 +245,27 @@ h2 { margin-bottom: 0; color: #20344e; font-size: 14px; font-weight: 700; letter
 .history-empty { padding: 35px 0; color: #8d99a7; font-size: 10px; text-align: center; }
 .profile-loading { margin-top: 20px; }
 .profile-loading-panel { min-height: 320px; }
+.pay-band-panel { margin-top: 16px; padding: 20px 20px 13px; }
+.pay-band-legend { display: flex; align-items: center; gap: 6px; color: #758499; font-size: 8px; white-space: nowrap; }
+.pay-band-legend i { width: 6px; height: 6px; margin-left: 5px; border-radius: 50%; background: #92a0b4; }
+.pay-band-legend i:first-child { margin-left: 0; }
+.pay-band-legend .median-dot { background: #5475d5; }
+.pay-band-legend .p75-dot { background: #42a78c; }
+.pay-band-departments { margin-top: 15px; border-top: 1px solid #edf0f4; }
+.pay-band-department { border-bottom: 1px solid #edf0f4; }
+.pay-band-department summary { display: flex; min-height: 43px; align-items: center; justify-content: space-between; gap: 15px; cursor: pointer; list-style: none; }
+.pay-band-department summary::-webkit-details-marker { display: none; }
+.pay-band-department summary::before { width: 12px; color: #8b98a8; content: "›"; font-size: 17px; transition: transform 120ms ease; }
+.pay-band-department[open] summary::before { transform: rotate(90deg); }
+.pay-band-department summary strong { flex: 1; color: #3f526a; font-size: 10px; font-weight: 600; }
+.pay-band-department summary span { color: #8794a3; font-size: 9px; }
+.pay-band-table-wrap { overflow-x: auto; padding: 0 0 10px 26px; }
+.pay-band-table { width: 100%; border-collapse: collapse; text-align: left; }
+.pay-band-table th { height: 30px; color: #9aa5b2; font-size: 8px; font-weight: 700; letter-spacing: 0.55px; white-space: nowrap; }
+.pay-band-table td { height: 35px; border-top: 1px solid #f2f4f6; color: #718196; font-size: 9px; white-space: nowrap; }
+.pay-band-table td strong { color: #52647a; font-size: 9px; font-weight: 600; }
+.pay-band-table .pay-band-median { color: #3559b0; font-weight: 700; }
+.pay-band-department summary:focus-visible { outline: 2px solid #829be1; outline-offset: -2px; }
 .salary-change-panel { margin-top: 14px; padding: 20px; }
 .salary-change-form { display: grid; grid-template-columns: 1fr 1fr 1fr 1.4fr auto; align-items: end; gap: 12px; margin-top: 18px; }
 .salary-change-form label { display: flex; min-width: 0; flex-direction: column; gap: 6px; }
@@ -279,6 +300,9 @@ h2 { margin-bottom: 0; color: #20344e; font-size: 14px; font-weight: 700; letter
   .directory-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .directory-filters .employee-search { grid-column: span 3; }
   .profile-overview-grid { grid-template-columns: 1fr; }
+  .pay-band-panel { padding-right: 15px; padding-left: 15px; }
+  .pay-band-legend { gap: 4px; }
+  .pay-band-table-wrap { padding-left: 17px; }
   .salary-change-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .salary-change-submit { grid-column: span 2; }
 }
