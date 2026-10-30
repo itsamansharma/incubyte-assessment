@@ -232,6 +232,7 @@ module Api
         return unless compensation
 
         {
+          id: compensation.id,
           amount_cents: compensation.amount_cents,
           currency: compensation.currency,
           amount_usd_cents: compensation.amount_usd_cents,

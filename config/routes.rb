@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :employees, only: %i[index show]
+      post "employees/:employee_id/compensations", to: "compensations#create"
       get "dashboard/overview", to: "dashboard#overview"
       get "dashboard/breakdown", to: "dashboard#breakdown"
       get "dashboard/pay_bands", to: "dashboard#pay_bands"
