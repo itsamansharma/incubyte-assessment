@@ -45,6 +45,13 @@ export default function EmployeeProfile() {
   const [employee, setEmployee] = useState<EmployeeProfileData | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [salary, setSalary] = useState("");
+  const [currency, setCurrency] = useState("USD");
+  const [effectiveDate, setEffectiveDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [changeReason, setChangeReason] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -54,7 +61,10 @@ export default function EmployeeProfile() {
         if (!response.ok) throw new Error(body.error ?? `Request failed (${response.status})`);
         return body as EmployeeProfileData;
       })
-      .then(setEmployee)
+      .then((data: EmployeeProfileData) => {
+        setEmployee(data);
+        if (data.current_compensation) setCurrency(data.current_compensation.currency);
+      })
       .catch((requestError: unknown) => {
         if (requestError instanceof DOMException && requestError.name === "AbortError") return;
         setError(requestError instanceof Error ? requestError.message : "Could not load this employee.");
@@ -65,6 +75,47 @@ export default function EmployeeProfile() {
 
     return () => controller.abort();
   }, [id]);
+
+  async function submitCompensation(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setFormError("");
+    setSaved(false);
+
+    const amountCents = Math.round(Number(salary) * 100);
+    if (!Number.isSafeInteger(amountCents) || amountCents <= 0) {
+      setFormError("Enter a salary greater than zero with at most two decimal places.");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/v1/employees/${encodeURIComponent(id)}/compensations`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          compensation: {
+            amount_cents: amountCents,
+            currency,
+            effective_date: effectiveDate,
+            change_reason: changeReason.trim(),
+          },
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error ?? result.errors?.join(", ") ?? `Request failed (${response.status})`);
+
+      const refreshed = await fetch(`${apiBaseUrl}/api/v1/employees/${encodeURIComponent(id)}`);
+      if (!refreshed.ok) throw new Error("Salary was saved, but the profile could not be refreshed. Reload the page to see the update.");
+      setEmployee(await refreshed.json() as EmployeeProfileData);
+      setSalary("");
+      setChangeReason("");
+      setSaved(true);
+    } catch (requestError: unknown) {
+      setFormError(requestError instanceof Error ? requestError.message : "Could not save the salary change.");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <AppShell activePage="employees">
@@ -98,6 +149,19 @@ export default function EmployeeProfile() {
                 <div className="salary-effective">Effective {formatDate(employee.current_compensation.effective_date)}</div>
               </> : <p className="no-current-salary">No active compensation record</p>}
             </article>
+          </section>
+
+          <section className="panel salary-change-panel">
+            <div className="panel-heading"><div><p className="panel-kicker">COMPENSATION</p><h2>Record a salary change</h2><p className="panel-description">The current salary stays in the history with its original effective date and reason.</p></div></div>
+            <form className="salary-change-form" onSubmit={submitCompensation}>
+              <label><span>Annual salary</span><input required type="number" inputMode="decimal" min="0.01" step="0.01" placeholder="e.g. 85000" value={salary} onChange={(event) => setSalary(event.target.value)} /></label>
+              <label><span>Currency</span><select value={currency} onChange={(event) => setCurrency(event.target.value)}><option value="USD">USD — US Dollar</option><option value="GBP">GBP — British Pound</option><option value="INR">INR — Indian Rupee</option><option value="EUR">EUR — Euro</option><option value="SGD">SGD — Singapore Dollar</option></select></label>
+              <label><span>Effective date</span><input required type="date" value={effectiveDate} onChange={(event) => setEffectiveDate(event.target.value)} /></label>
+              <label className="change-reason-field"><span>Reason</span><input required maxLength={100} placeholder="e.g. Annual review, promotion" value={changeReason} onChange={(event) => setChangeReason(event.target.value)} /></label>
+              <div className="salary-change-submit"><button type="submit" disabled={saving}>{saving ? "Saving…" : "Save salary change"}</button></div>
+              {formError && <p className="salary-form-message error" role="alert">{formError}</p>}
+              {saved && <p className="salary-form-message success" role="status">Salary change saved. Current compensation and history are up to date.</p>}
+            </form>
           </section>
 
           <section className="panel history-panel">

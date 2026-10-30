@@ -245,6 +245,18 @@ h2 { margin-bottom: 0; color: #20344e; font-size: 14px; font-weight: 700; letter
 .history-empty { padding: 35px 0; color: #8d99a7; font-size: 10px; text-align: center; }
 .profile-loading { margin-top: 20px; }
 .profile-loading-panel { min-height: 320px; }
+.salary-change-panel { margin-top: 14px; padding: 20px; }
+.salary-change-form { display: grid; grid-template-columns: 1fr 1fr 1fr 1.4fr auto; align-items: end; gap: 12px; margin-top: 18px; }
+.salary-change-form label { display: flex; min-width: 0; flex-direction: column; gap: 6px; }
+.salary-change-form label > span { color: #758499; font-size: 9px; font-weight: 600; }
+.salary-change-form input, .salary-change-form select { width: 100%; height: 36px; border: 1px solid #e2e8ef; border-radius: 6px; outline: none; background: #fff; padding: 0 9px; color: #34475e; font: inherit; font-size: 10px; }
+.salary-change-form input:focus, .salary-change-form select:focus { border-color: #829be1; box-shadow: 0 0 0 2px rgb(100 131 220 / 12%); }
+.salary-change-submit button { height: 36px; border: 0; border-radius: 6px; background: #3158b7; padding: 0 13px; color: #fff; font-size: 9px; font-weight: 600; white-space: nowrap; }
+.salary-change-submit button:hover:not(:disabled) { background: #27499c; }
+.salary-change-submit button:disabled { cursor: wait; opacity: 0.65; }
+.salary-form-message { grid-column: 1 / -1; margin: 0; font-size: 9px; line-height: 1.5; }
+.salary-form-message.error { color: #a54d43; }
+.salary-form-message.success { color: #278a6b; }
 
 .dashboard-loading { padding-top: 5px; }
 .loading-heading { width: 240px; height: 58px; margin-bottom: 23px; border-radius: 8px; background: linear-gradient(90deg, #e9edf3, #f5f7fa, #e9edf3); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
@@ -267,6 +279,8 @@ h2 { margin-bottom: 0; color: #20344e; font-size: 14px; font-weight: 700; letter
   .directory-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .directory-filters .employee-search { grid-column: span 3; }
   .profile-overview-grid { grid-template-columns: 1fr; }
+  .salary-change-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .salary-change-submit { grid-column: span 2; }
 }
 
 @media (max-width: 760px) {
@@ -302,6 +316,10 @@ h2 { margin-bottom: 0; color: #20344e; font-size: 14px; font-weight: 700; letter
   .profile-info-panel, .current-pay-panel, .history-panel { padding-right: 15px; padding-left: 15px; }
   .profile-details { gap: 14px; }
   .history-table { min-width: 650px; }
+  .salary-change-panel { padding: 17px 15px; }
+  .salary-change-form { grid-template-columns: 1fr; }
+  .salary-change-submit { grid-column: auto; }
+  .salary-change-submit button { width: 100%; }
   .current-salary { font-size: 27px; }
   .directory-toolbar { align-items: flex-start; flex-direction: column; }
   .sort-controls { align-self: flex-end; }
