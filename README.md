@@ -1,3 +1,4 @@
+/Users/aman/.rvm/scripts/rvm:29: operation not permitted: ps
 # ACME Global Salary Management
 
 Rails 8.1 API for the Incubyte Ruby on Rails developer assessment. Product scope and trade-offs are in [PRD.md](PRD.md).
@@ -6,28 +7,44 @@ Rails 8.1 API for the Incubyte Ruby on Rails developer assessment. Product scope
 
 - Ruby 3.4.12
 - PostgreSQL 15 or later
-- Bundler
+- Bundler (version in `Gemfile.lock`)
+- Node.js 20.9 or later
+- pnpm 11.25.0
 
-## Setup
+## Run locally
 
-1. Install the gems with `bundle install`.
-2. Set `DATABASE_URL` if your local PostgreSQL connection differs from the defaults in `config/database.yml`.
-3. Prepare the database with `bin/rails db:prepare`.
-4. Start the API with `bin/rails server`.
+1. Install Ruby 3.4.12, PostgreSQL 15 or later, Node.js 20.9 or later, and pnpm 11.25.0. Start the PostgreSQL service.
+2. From the repository root, install the Ruby dependencies and prepare the database:
 
-The health endpoint is `GET /up`. API routes live under `/api/v1`.
+   ```sh
+   bundle install
+   bin/rails db:prepare
+   bin/rails db:seed
+   ```
+
+   The seed command creates the synthetic departments, exchange rates, and sample employees. If your PostgreSQL connection differs from the local defaults in `config/database.yml`, set `DATABASE_URL` in your shell before running the Rails commands.
+3. Start the Rails API in one terminal:
+
+   ```sh
+   bin/rails server -p 3000
+   ```
+
+4. In a second terminal, configure and start the frontend:
+
+   ```sh
+   cd frontend
+   cp .env.example .env.local
+   pnpm install --frozen-lockfile
+   pnpm dev
+   ```
+
+   The example environment file points both frontend API settings to `http://127.0.0.1:3000`; update them if Rails runs at another address. The dashboard is available at [http://localhost:3001](http://localhost:3001).
+
+The API health endpoint is `GET http://localhost:3000/up`. The API root `/` does not serve a page. See the [API reference](docs/api.md) for endpoints, parameters, and request/response examples.
 
 ## Frontend
 
-The Next.js dashboard is in [`frontend/`](frontend/README.md). Start PostgreSQL and Rails on port `3000`, then run:
-
-```sh
-cd frontend
-pnpm install
-pnpm dev
-```
-
-Open [http://localhost:3001](http://localhost:3001). If Rails runs elsewhere, set both `RAILS_API_URL` and `NEXT_PUBLIC_RAILS_API_URL` in `frontend/.env.local` to the API base URL.
+The Next.js dashboard source and frontend-specific notes are in [`frontend/`](frontend/README.md). Start PostgreSQL and the Rails API before starting the frontend.
 
 ## Deployment
 
