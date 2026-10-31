@@ -1,23 +1,50 @@
-# AI use and review notes
+# AI-assisted engineering workflow
 
-## How AI was used
+## Purpose and ownership
 
-Codex was used as an engineering assistant during this assessment to help read and summarize the requirements, plan work in small increments, review existing code, implement and refactor application code, expand backend and frontend tests, diagnose failures, and check the local and deployed application. The developer directed the scope and reviewed changes through repository inspection, automated checks, and live read-only smoke checks.
+Codex was used as an engineering assistant to accelerate requirement analysis, code navigation, implementation, review, test design, and documentation. It supplied drafts and suggestions; the developer retained responsibility for scope, technical decisions, accepting changes, and the final submission.
 
-AI output was treated as a proposal to verify. The Rails suite, frontend tests, lint, TypeScript check, production build, and performance script provide the recorded checks for this repository. The results and limits of the performance measurements are in `PERFORMANCE.md`.
+The work was kept aligned with the assessment and the existing application. Changes were approached incrementally, with the expected behavior and the relevant part of the codebase established before implementation. AI-generated changes were reviewed in context rather than accepted as authoritative output.
 
-## Representative instructions
+## How the work was directed
 
-These excerpts are from the working conversation and illustrate the instructions that shaped the process:
+Instructions emphasized concrete outcomes and constraints:
 
-> “start implementing in small setps and only one step at a time, do let me know which step is being processed and whats goal of each step before starting it”
+- **Start from the requirements and existing code.** Understand the assignment, inspect the current implementation, and identify functional gaps before proposing changes.
+- **Keep changes scoped.** Work on one defined improvement at a time and avoid unrelated rewrites.
+- **Preserve behavior.** When reviewing or refactoring, remove duplication and unnecessary code only where the existing application behavior can be retained.
+- **Verify changes.** Add or update relevant tests, use the project's existing checks, and investigate failures rather than masking them.
+- **Treat deployment as an integration check.** Confirm the deployed revision and exercise key read paths after a change, without using production-like data for write experiments.
 
-> “before going further, please check the existing code and make relevant changes.”
+## Representative instruction patterns
 
-> “now add the test cases in backend, do not leave any test cases unwritten, try to cover most of the cases”
+The examples below are editorial summaries of the instructions used during the work, not verbatim quotations.
 
-> “now first do the code review, and make necessary changes, remove the garbage/unnecessary code, check if there is some repeting code (remove the repeting code and write the reusable code), optimise the code wherever needed.”
+### Requirement analysis
 
-## Review trail
+> Read the assessment and the existing implementation first. Turn the requirements into a concise list of expected behavior, identify any functional conflicts, and call out uncertainty before changing code.
 
-The repository history records focused increments from the initial requirements and implementation through API/UI cleanup, backend test coverage, and frontend test coverage. See `git log --oneline` for the commit sequence. The latest test-focused commit is `Add frontend tests for payroll screens`.
+### Focused implementation
+
+> Make the employee directory support full-name search, usable pagination, and dropdown filters. Prevent invalid salary input with clear user feedback, and align the search icon with its field. Keep the change focused on these behaviors.
+
+### Review and refactoring
+
+> Review the Rails and frontend code for defects, duplicated logic, and unnecessary complexity. Refactor repeated behavior into reusable code where appropriate, preserve the product behavior, and explain the evidence used to validate the result.
+
+### Test design
+
+> Inspect the backend behavior and its edge cases, then add tests for the API's expected and invalid-input paths. Prefer tests that verify observable behavior and keep them consistent with the existing test conventions.
+
+## Review and verification
+
+AI suggestions were assessed against the assignment, existing code conventions, API/UI behavior, and the affected tests. Automated checks and manual application checks were used during development; the repository history records the incremental implementation. The performance measurements and reproduction steps are documented in [`../PERFORMANCE.md`](../PERFORMANCE.md).
+
+Representative practices included:
+
+- testing expected behavior as well as boundary and invalid-input cases;
+- checking that employee search, filters, sorting, and pagination still work after related changes;
+- checking the deployed frontend and API after the merge;
+- keeping demo records synthetic and avoiding authentication or other features outside the assessment scope.
+
+This note describes the AI-assisted process and its controls. It is not a claim that an AI system independently verified or guaranteed the correctness of the application.
