@@ -1,4 +1,3 @@
-/Users/aman/.rvm/scripts/rvm:29: operation not permitted: ps
 # API reference
 
 This document describes the Rails API in this repository. Examples use the local API base URL `http://localhost:3000`; replace it with the deployed API URL when needed. All API routes are under `/api/v1` and return JSON.

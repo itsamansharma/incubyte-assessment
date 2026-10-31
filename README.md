@@ -1,4 +1,3 @@
-/Users/aman/.rvm/scripts/rvm:29: operation not permitted: ps
 # ACME Global Salary Management
 
 Rails 8.1 API for the Incubyte Ruby on Rails developer assessment. Product scope and trade-offs are in [PRD.md](PRD.md).
