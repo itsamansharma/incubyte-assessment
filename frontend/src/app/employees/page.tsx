@@ -30,6 +30,13 @@ type EmployeeResponse = {
   pagination: { page: number; per_page: number; total_count: number; total_pages: number };
 };
 
+const MAX_SALARY_USD = Number.MAX_SAFE_INTEGER / 100;
+const COUNTRIES = [
+  ["US", "United States"], ["GB", "United Kingdom"], ["IN", "India"], ["DE", "Germany"], ["SG", "Singapore"],
+] as const;
+const DEPARTMENTS = ["Engineering", "Product", "Sales", "Finance", "Human Resources", "Operations", "Marketing", "Customer Support"];
+const CURRENCIES = ["USD", "EUR", "GBP", "INR", "SGD"];
+
 export default function EmployeesPage() {
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
@@ -85,8 +92,22 @@ export default function EmployeesPage() {
     setError("");
   }
 
-  const firstResult = data?.pagination.total_count ? (page - 1) * data.pagination.per_page + 1 : 0;
-  const lastResult = Math.min(page * (data?.pagination.per_page ?? 25), data?.pagination.total_count ?? 0);
+  function updateSalary(value: string, setValue: (salary: string) => void) {
+    if (value === "") {
+      setValue("");
+      resetPage();
+      return;
+    }
+
+    const amount = Number(value);
+    const boundedAmount = Number.isFinite(amount) ? Math.min(Math.max(amount, 0), MAX_SALARY_USD) : MAX_SALARY_USD;
+    setValue(String(boundedAmount));
+    resetPage();
+  }
+
+  const resultPage = data?.pagination.page ?? page;
+  const firstResult = data?.pagination.total_count ? (resultPage - 1) * data.pagination.per_page + 1 : 0;
+  const lastResult = Math.min(resultPage * (data?.pagination.per_page ?? 25), data?.pagination.total_count ?? 0);
 
   return (
     <AppShell activePage="employees">
@@ -102,14 +123,14 @@ export default function EmployeesPage() {
 
         <section className="directory-filters" aria-label="Employee filters">
           <label className="employee-search">
-            <span aria-hidden="true">⌕</span>
+            <svg aria-hidden="true" viewBox="0 0 20 20"><circle cx="8.5" cy="8.5" r="5.5" /><path d="m13 13 4 4" /></svg>
             <input aria-label="Search employees" placeholder="Search name, email or ID..." value={query} onChange={(event) => { setQuery(event.target.value); resetPage(); }} />
           </label>
-          <label className="filter-field"><span>Country</span><input placeholder="Any country" maxLength={2} value={country} onChange={(event) => { setCountry(event.target.value.toUpperCase()); resetPage(); }} /></label>
-          <label className="filter-field"><span>Department</span><input placeholder="Any department" value={department} onChange={(event) => { setDepartment(event.target.value); resetPage(); }} /></label>
-          <label className="filter-field currency-filter"><span>Currency</span><input placeholder="Any" maxLength={3} value={currency} onChange={(event) => { setCurrency(event.target.value.toUpperCase()); resetPage(); }} /></label>
-          <label className="filter-field salary-filter"><span>Min annual salary (USD)</span><input inputMode="decimal" type="number" min="0" placeholder="No minimum" value={minimumSalary} onChange={(event) => { setMinimumSalary(event.target.value); resetPage(); }} /></label>
-          <label className="filter-field salary-filter"><span>Max annual salary (USD)</span><input inputMode="decimal" type="number" min="0" placeholder="No maximum" value={maximumSalary} onChange={(event) => { setMaximumSalary(event.target.value); resetPage(); }} /></label>
+          <label className="filter-field"><span>Country</span><select aria-label="Country" value={country} onChange={(event) => { setCountry(event.target.value); resetPage(); }}><option value="">Any country</option>{COUNTRIES.map(([code, name]) => <option key={code} value={code}>{name}</option>)}</select></label>
+          <label className="filter-field"><span>Department</span><select aria-label="Department" value={department} onChange={(event) => { setDepartment(event.target.value); resetPage(); }}><option value="">Any department</option>{DEPARTMENTS.map((name) => <option key={name} value={name}>{name}</option>)}</select></label>
+          <label className="filter-field currency-filter"><span>Currency</span><select aria-label="Currency" value={currency} onChange={(event) => { setCurrency(event.target.value); resetPage(); }}><option value="">Any currency</option>{CURRENCIES.map((code) => <option key={code} value={code}>{code}</option>)}</select></label>
+          <label className="filter-field salary-filter"><span>Min annual salary (USD)</span><input inputMode="decimal" type="number" min="0" max={MAX_SALARY_USD} step="0.01" placeholder="No minimum" value={minimumSalary} onChange={(event) => updateSalary(event.target.value, setMinimumSalary)} /></label>
+          <label className="filter-field salary-filter"><span>Max annual salary (USD)</span><input inputMode="decimal" type="number" min="0" max={MAX_SALARY_USD} step="0.01" placeholder="No maximum" value={maximumSalary} onChange={(event) => updateSalary(event.target.value, setMaximumSalary)} /></label>
         </section>
 
         <div className="directory-toolbar">
@@ -143,8 +164,8 @@ export default function EmployeesPage() {
         </div>
 
         <div className="directory-pagination">
-          <span>Page {data?.pagination.page ?? page} of {Math.max(data?.pagination.total_pages ?? 0, 1)}</span>
-          <div><button type="button" disabled={page <= 1 || loading} onClick={() => goToPage(Math.max(page - 1, 1))}>Previous</button><button type="button" disabled={loading || !data || page >= data.pagination.total_pages} onClick={() => goToPage(page + 1)}>Next</button></div>
+          <span>Page {resultPage} of {Math.max(data?.pagination.total_pages ?? 0, 1)}</span>
+          <div><button type="button" disabled={resultPage <= 1 || loading} onClick={() => goToPage(Math.max(resultPage - 1, 1))}>Previous</button><button type="button" disabled={loading || !data || resultPage >= data.pagination.total_pages} onClick={() => goToPage(resultPage + 1)}>Next</button></div>
         </div>
       </section>
     </AppShell>
