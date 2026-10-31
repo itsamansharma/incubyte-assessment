@@ -51,7 +51,8 @@ The Next.js dashboard source and frontend-specific notes are in [`frontend/`](fr
 
 ## Deployment
 
-The repository includes a Render Blueprint in [`render.yaml`](render.yaml) for the Rails API, Next.js dashboard, and PostgreSQL database. To deploy, connect the private GitHub repository to Render and create a Blueprint from the repository. The Blueprint currently uses free instances for a demo: web services sleep after 15 minutes of inactivity, and the free PostgreSQL database expires after 30 days. See [Render free-tier limits](https://render.com/docs/free) before deploying. Keep this demo dataset synthetic: the assessment API does not include authentication.
+- Dashboard: [acme-payroll-web-49xu.onrender.com](https://acme-payroll-web-49xu.onrender.com)
+- API health check: [acme-payroll-api-5dkn.onrender.com/up](https://acme-payroll-api-5dkn.onrender.com/up)
 
 ## Engineering artifacts
 
