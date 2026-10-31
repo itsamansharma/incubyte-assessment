@@ -38,7 +38,7 @@ describe("employee directory", () => {
 
     expect(await screen.findByRole("link", { name: "Asha Rao" })).toBeTruthy();
     expect(screen.getByText("ACM-00007 · asha@example.com")).toBeTruthy();
-    expect(screen.getByText("Engineering")).toBeTruthy();
+    expect(screen.getByRole("cell", { name: /Engineering/ })).toBeTruthy();
     expect(screen.getByText("IN")).toBeTruthy();
     expect(screen.getByText("Showing 1–1 of 1")).toBeTruthy();
     expect(screen.getByRole("link", { name: "Asha Rao" }).getAttribute("href")).toBe("/employees/7");
@@ -51,9 +51,9 @@ describe("employee directory", () => {
     await screen.findByRole("link", { name: "Asha Rao" });
 
     fireEvent.change(screen.getByRole("textbox", { name: "Search employees" }), { target: { value: "Asha Rao" } });
-    fireEvent.change(screen.getByLabelText("Country"), { target: { value: "in" } });
+    fireEvent.change(screen.getByLabelText("Country"), { target: { value: "IN" } });
     fireEvent.change(screen.getByLabelText("Department"), { target: { value: "Engineering" } });
-    fireEvent.change(screen.getByLabelText("Currency"), { target: { value: "inr" } });
+    fireEvent.change(screen.getByLabelText("Currency"), { target: { value: "INR" } });
     fireEvent.change(screen.getByLabelText("Min annual salary (USD)"), { target: { value: "50000.25" } });
     fireEvent.change(screen.getByLabelText("Max annual salary (USD)"), { target: { value: "100000" } });
     fireEvent.change(screen.getByLabelText("Sort by"), { target: { value: "salary" } });
@@ -81,11 +81,30 @@ describe("employee directory", () => {
     render(<EmployeesPage />);
 
     await screen.findByRole("link", { name: "Asha Rao" });
+    expect(screen.getByRole("button", { name: "Next" }).hasAttribute("disabled")).toBe(false);
+    expect(screen.getByRole("button", { name: "Previous" }).hasAttribute("disabled")).toBe(true);
     fireEvent.click(screen.getByRole("button", { name: "Next" }));
     expect(await screen.findByRole("link", { name: "Ben Lee" })).toBeTruthy();
     expect(screen.getByText("Page 2 of 2")).toBeTruthy();
     expect(String(fetchMock.mock.calls.at(-1)?.[0])).toContain("page=2");
     expect(screen.getByRole("button", { name: "Next" }).hasAttribute("disabled")).toBe(true);
+  });
+
+  it("offers seeded filter dropdowns and caps salary input before sending cents", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse(page([employee(7)])));
+    vi.stubGlobal("fetch", fetchMock);
+    render(<EmployeesPage />);
+
+    await screen.findByRole("link", { name: "Asha Rao" });
+    expect(screen.getByRole("option", { name: "India" })).toBeTruthy();
+    expect(screen.getByRole("option", { name: "Engineering" })).toBeTruthy();
+    expect(screen.getByRole("option", { name: "INR" })).toBeTruthy();
+
+    fireEvent.change(screen.getByLabelText("Max annual salary (USD)"), { target: { value: "99999999999999999999" } });
+    const salaryInput = screen.getByLabelText("Max annual salary (USD)") as HTMLInputElement;
+    expect(Number(salaryInput.value)).toBeLessThanOrEqual(Number(salaryInput.max));
+    expect(Math.round(Number(salaryInput.value) * 100)).toBeLessThanOrEqual(Number.MAX_SAFE_INTEGER);
+    await waitFor(() => expect(String(fetchMock.mock.calls.at(-1)?.[0])).not.toContain("max_salary_usd_cents=99999999999999999999"));
   });
 
   it("shows empty and API error states", async () => {

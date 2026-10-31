@@ -80,10 +80,10 @@ module Api
         assert_equal 100, response.parsed_body.dig("pagination", "per_page")
       end
 
-      test "index searches employee code, name, and email without treating wildcards as patterns" do
+      test "index searches employee code, full name, and email without treating wildcards as patterns" do
         Employee.update!(@employee.id, first_name: "Priya", last_name: "Sharma", email: "priya.sharma@example.test")
 
-        { "ACM-00001" => "ACM-00001", "PRIYA" => "ACM-00001", "sharma@example" => "ACM-00001" }.each do |query, expected_code|
+        { "ACM-00001" => "ACM-00001", "PRIYA" => "ACM-00001", "Priya Sharma" => "ACM-00001", "sharma@example" => "ACM-00001" }.each do |query, expected_code|
           get "/api/v1/employees", params: { q: query }
 
           assert_response :success

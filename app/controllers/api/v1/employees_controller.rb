@@ -155,7 +155,7 @@ module Api
         if filters[:search]
           query = "%#{Employee.sanitize_sql_like(filters[:search])}%"
           relation = relation.where(
-            "employees.employee_code ILIKE :query OR employees.first_name ILIKE :query OR employees.last_name ILIKE :query OR employees.email ILIKE :query",
+            "employees.employee_code ILIKE :query OR employees.first_name ILIKE :query OR employees.last_name ILIKE :query OR concat_ws(' ', employees.first_name, employees.last_name) ILIKE :query OR employees.email ILIKE :query",
             query: query
           )
         end
