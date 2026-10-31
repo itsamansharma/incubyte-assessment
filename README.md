@@ -41,6 +41,10 @@ Rails 8.1 API for the Incubyte Ruby on Rails developer assessment. Product scope
 
 The API health endpoint is `GET http://localhost:3000/up`. The API root `/` does not serve a page. See the [API reference](docs/api.md) for endpoints, parameters, and request/response examples.
 
+## Postman collection
+
+Import [`incubyte-assessment.postman_collection.json`](incubyte-assessment.postman_collection.json) into Postman to try the employee, dashboard, and compensation endpoints. Set the collection variable `base_url` to `http://localhost:3000` for local development, or to the base URL of the API you want to use. Start Rails and seed the database first; the compensation request writes data, so use a demo database.
+
 ## Frontend
 
 The Next.js dashboard source and frontend-specific notes are in [`frontend/`](frontend/README.md). Start PostgreSQL and the Rails API before starting the frontend.

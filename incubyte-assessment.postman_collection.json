@@ -1,0 +1,116 @@
+{
+  "info": {
+    "_postman_id": "incubyte-assessment",
+    "name": "incubyte-assessment",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Employees",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/employees?q=ACM&country_code=IN&department=ENG&currency=INR&min_salary_usd_cents=500000&sort=salary&direction=desc&page=1&per_page=25",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "employees"],
+          "query": [
+            { "key": "q", "value": "ACM" },
+            { "key": "country_code", "value": "IN" },
+            { "key": "department", "value": "ENG" },
+            { "key": "currency", "value": "INR" },
+            { "key": "min_salary_usd_cents", "value": "500000" },
+            { "key": "sort", "value": "salary" },
+            { "key": "direction", "value": "desc" },
+            { "key": "page", "value": "1" },
+            { "key": "per_page", "value": "25" }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "employee",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/employees/2",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "employees", "2"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Dashboard",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/dashboard/overview",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "dashboard", "overview"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Dashboard-Breakdown",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/dashboard/breakdown",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "dashboard", "breakdown"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "pay-bands",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/dashboard/pay_bands",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "dashboard", "pay_bands"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "change-compensation",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"compensation\": {\n    \"amount_cents\": 120000000,\n    \"currency\": \"INR\",\n    \"effective_date\": \"2025-06-01\",\n    \"change_reason\": \"Promotion\"\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/employees/7482/compensations",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "employees", "7482", "compensations"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
